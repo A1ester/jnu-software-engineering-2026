@@ -11,6 +11,6 @@
 | GitHub CLI | 2.96.0 | `gh --version` |
 | Git 用户名 | A1ester | `git config --global user.name` |
 | Git 邮箱 | 19558788851@163.com | `git config --global user.email` |
-| GitHub CLI 登录 | 已登录 github.com，账号 A1ester，HTTPS 协议 | `gh auth status`；令牌已遮盖 |
+| GitHub CLI 登录 | 已登录 github.com，账号 A1ester，HTTPS 协议 | `gh auth status` |
 
-仓库仅位于指定子目录。本文件为审计记录，不包含凭据。
+本表记录工具检查结果，不包含登录凭据。

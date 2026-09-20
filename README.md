@@ -1,10 +1,19 @@
-# JNU Software Engineering Course Project
+# 校园社团活动管理系统
 
-课程：暨南大学《软件工程实验》  
-课程设计：《校园社团活动管理系统》
+暨南大学《软件工程实验》课程设计。项目面向校园社团活动的筹备、审核、发布、报名、签到与协作，目标是让活动信息、办理状态和任务责任更清楚。
 
 产品定位：面向校园社团活动全生命周期的综合管理与协同平台。
 
-当前完成：Experiment 1 — Environment Setup；Experiment 2 — Requirements Analysis。当前尚未进入 Software Design、Implementation、Testing。这里的“完成”指文档基线，不代表业务系统已经上线。
+## 当前进度
 
-`docs/` 存放项目概述、范围与术语；`labs/lab01-environment/` 与 `labs/lab02-requirements/` 存放两次实验成果；`project/src/`、`project/tests/` 目前仅占位。
+- 实验 1：环境搭建、Hello World、选题及初步计划。
+- 实验 2：模拟需求调研、需求清单与《软件需求规格说明书》。问卷和访谈均为课程实验模拟数据。
+
+目前完成的是前两次实验的文档与版本记录，尚未进入系统设计、业务实现和系统测试。
+
+## 仓库结构
+
+- `docs/`：项目概述、候选范围和术语。
+- `labs/lab01-environment/`：实验 1 报告与运行证据。
+- `labs/lab02-requirements/`：实验 2 调研、需求与 SRS。
+- `project/src/`、`project/tests/`：后续阶段的占位目录。

@@ -4,7 +4,7 @@
 我通过环境核验、最小程序和版本提交，建立后续课程设计可追踪的起点，并依据软件工程过程选择题目。
 
 ## 二、实验环境
-本机系统 API 返回 Microsoft Windows NT 10.0.26200.0；Git 2.52.0.windows.1、Python 3.12.2、VS Code 1.137.0、GitHub CLI 2.96.0。Git 全局用户名为 A1ester，邮箱为 19558788851@163.com；`gh auth status` 显示已登录 A1ester。具体命令见环境审计。
+我检查了本机环境。系统 API 返回 Microsoft Windows NT 10.0.26200.0；Git 为 2.52.0.windows.1，Python 为 3.12.2，VS Code 为 1.137.0，GitHub CLI 为 2.96.0。`gh auth status` 显示账号 A1ester 已登录；Git 用户配置见环境审计记录。
 
 ## 三、实验内容
 我验证工具，建立独立 Git 仓库，编写并运行 Hello World；阅读课程《软件工程概述》课件，选定《校园社团活动管理系统》，制定阶段计划。
@@ -13,19 +13,19 @@
 我先确认指定仓库不存在，再在课程根目录下创建 `jnu-software-engineering-2026`，仅在该子目录初始化 main 分支。随后分批提交仓库骨架、Hello World、选题与计划，以保留真实过程。
 
 ## 五、Hello World 程序
-程序为 `print("Hello World")`。执行 `python labs/lab01-environment/hello/hello.py` 后，输出 `Hello World`，退出码 0。命令记录位于 `evidence/command-output.txt`。
+我用 `print("Hello World")` 编写最小程序，并执行 `python labs/lab01-environment/hello/hello.py`。程序输出 `Hello World`，退出码为 0；命令记录位于 `evidence/command-output.txt`。
 
 ## 六、Git 与 GitHub 配置
-我核查了 Git 用户配置和 GitHub CLI 登录状态。提交历史与远程状态以仓库实际记录为准；若查看本报告时远程尚未配置，应以最终 `git remote -v` 为准，不把本地提交称作远程推送。
+我核查了 Git 用户配置和 GitHub CLI 登录状态，将项目提交到独立仓库，并在实验 1 完成后建立 `exp1-baseline` 标签。仓库随后推送到 GitHub 私有仓库；提交和远程状态可由 Git 历史核对。
 
 ## 七、课程设计选题及依据
 课程课件讲到软件开发挑战、质量属性和软件过程。我选择校园社团活动管理，因为其角色和业务流程清楚，适合需求获取、建模、实现、测试和配置管理；多角色权限、审核和活动状态又有足够的分析价值。
 
 ## 八、课程设计初步计划
-按环境与选题、需求、设计、实现、测试、整理发布六阶段推进；本轮仅完成前两阶段。后续阶段的投入和完成判据见 `experiment-plan.md`，未编造具体日期。
+我把课程设计分为环境与选题、需求、设计、实现、测试、整理发布六个阶段。本轮完成前两阶段；后续投入和完成判据见 `experiment-plan.md`，具体日期待课程安排确定。
 
 ## 九、实验结果
-已建立独立仓库、运行最小程序、完成选题和初步计划。GitHub 远程与阶段标签以最终仓库状态核验。
+我建立了独立仓库，运行了最小程序，完成选题和初步计划，并保留了实验 1 的提交与标签。
 
 ## 十、实验总结
 我认识到先明确问题、范围和阶段产物，比立即扩展代码更便于检查和迭代。后续将以需求基线约束设计与实现。
