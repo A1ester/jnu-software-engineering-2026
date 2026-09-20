@@ -1,0 +1,3 @@
+Command: python labs/lab01-environment/hello/hello.py
+Output: Hello World
+Exit Code: 0
