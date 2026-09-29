@@ -1,13 +1,14 @@
 # 系统用例模型
 
-系统具有三个业务层次：学校社团管理中心、各学生社团和普通学生。Visitor / 访客只作为浏览公开信息的辅助 Actor，不构成独立业务层级。Club Member / 社团成员和 Club Leader / 社团负责人本质上仍属于学生用户，但在具体社团上下文中拥有附加角色和权限。Management Center Staff / 学校社团管理中心工作人员是学校层面的业务管理角色，不表示服务器、数据库或运维权限。
+系统具有三个业务层次：学校社团管理中心、各学生社团和普通学生。Visitor / 访客只作为浏览公开信息的辅助 Actor，不构成独立业务层级。Applicant / 社团申请人是拟发起社团备案的学生，备案通过前不具有正式社团负责人身份。Club Member / 社团成员和 Club Leader / 社团负责人本质上仍属于学生用户，但在具体社团上下文中拥有附加角色和权限。Management Center Staff / 学校社团管理中心工作人员是学校层面的业务管理角色，不表示服务器、数据库或运维权限。
 
-所有受保护用例同时受 Role Permission 与 Resource Ownership 约束：普通学生只能管理本人的业务记录；社团成员和负责人只能操作所属或负责社团范围内的资源；管理中心工作人员按职责执行跨社团审核、治理、资源审批、统计与审计。
+所有受保护用例同时受 Role Permission 与 Resource Ownership 约束：普通学生只能管理本人的业务记录；社团申请人只能提交和查看本人的备案申请；社团成员和负责人只能操作所属或负责社团范围内的资源；管理中心工作人员按职责执行跨社团审核、治理、资源审批、统计与审计。
 
 ```mermaid
 flowchart LR
     Visitor((Visitor / 访客))
     Student((Student / 普通学生))
+    Applicant((Applicant / 社团申请人))
     Member((Club Member / 社团成员))
     Leader((Club Leader / 社团负责人))
     Staff((Management Center Staff / 学校社团管理中心工作人员))
@@ -51,7 +52,7 @@ flowchart LR
     Leader --> UC10
     Leader --> UC11
     Leader --> UC12
-    Leader --> UC17
+    Applicant --> UC17
     Staff --> UC2
     Staff --> UC8
     Staff --> UC15

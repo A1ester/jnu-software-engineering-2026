@@ -8,8 +8,10 @@ erDiagram
     CLUB ||--o{ CLUB_MEMBERSHIP : has
     USER ||--o{ CLUB_LEADERSHIP : holds
     CLUB ||--o{ CLUB_LEADERSHIP : has
-    CLUB ||--o{ CLUB_REGISTRATION : submits
-    USER ||--o{ CLUB_REGISTRATION : reviews
+    USER ||--o{ CLUB_REGISTRATION : submits_as_applicant
+    USER ||--o{ CLUB_REGISTRATION : reviews_as_staff
+    CLUB_REGISTRATION ||--o| CLUB : forms_or_activates
+    CLUB_REGISTRATION ||--o| CLUB_LEADERSHIP : establishes
     CLUB ||--o{ CLUB_STATUS_CHANGE : records
     USER ||--o{ CLUB_STATUS_CHANGE : confirms
     CLUB ||--o{ ACTIVITY : organizes
@@ -36,8 +38,8 @@ erDiagram
 |---|---|---|
 | USER | 系统账号及平台角色 | 密码不在本模型中以明文属性表示；访问受 NFR-004、NFR-005 约束 |
 | CLUB / CLUB_MEMBERSHIP | 社团、社团业务状态及用户在社团中的成员关系 | 社团状态包括正常、停用等经确认的业务状态；同时依据角色和资源归属授权（BR-009、FR-034） |
-| CLUB_LEADERSHIP | 学生用户担任某个学生社团负责人的关系及其变更记录 | 负责人变更须记录原负责人、新负责人、确认人和时间，并由管理中心工作人员确认（FR-034） |
-| CLUB_REGISTRATION | 学生社团提交的备案信息及管理中心审核结果 | 通过后备案生效；驳回必须记录原因（FR-033） |
+| CLUB_LEADERSHIP | 学生用户担任某个学生社团负责人的关系及其变更记录 | 初始关系在备案通过后形成或激活；后续负责人变更须记录原负责人、新负责人、确认人和时间，并由管理中心工作人员确认（FR-033、FR-034） |
+| CLUB_REGISTRATION | 拟任社团负责人或社团申请人提交的备案申请及管理中心审核结果 | 申请主体是 USER / Applicant；通过后形成或激活正式 CLUB 和 CLUB_LEADERSHIP，驳回必须记录原因（FR-033） |
 | CLUB_STATUS_CHANGE | 社团正常、停用等业务状态的治理记录 | 仅有相应职责的管理中心工作人员可确认，变更结果应可追踪（FR-034） |
 | ACTIVITY | 活动基本信息与生命周期状态 | 时间顺序合法；状态按 BR-006、BR-007 变化 |
 | ACTIVITY_REVIEW | 学校社团管理中心工作人员对活动的审核结论 | 驳回必须有原因（BR-011） |
