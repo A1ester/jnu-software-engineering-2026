@@ -16,7 +16,7 @@
 我用 `print("Hello World")` 编写最小程序，并执行 `python labs/lab01-environment/hello/hello.py`。程序输出 `Hello World`，退出码为 0；命令记录位于 `evidence/command-output.txt`。
 
 ## 六、Git 与 GitHub 配置
-我核查了 Git 用户配置和 GitHub CLI 登录状态，将项目提交到独立仓库，并在实验 1 完成后建立 `exp1-baseline` 标签。仓库随后推送到 GitHub 私有仓库；提交和远程状态可由 Git 历史核对。
+我核查了 Git 用户配置和 GitHub CLI 登录状态，将项目提交到独立仓库，并在实验 1 完成后建立 `exp1-baseline` 标签。仓库最初以 Private 方式创建并推送，后续为了便于课程审查调整为 Public；提交和远程状态可由 Git 历史核对。
 
 ## 七、课程设计选题及依据
 课程课件讲到软件开发挑战、质量属性和软件过程。我选择校园社团活动管理，因为其角色和业务流程清楚，适合需求获取、建模、实现、测试和配置管理；多角色权限、审核和活动状态又有足够的分析价值。

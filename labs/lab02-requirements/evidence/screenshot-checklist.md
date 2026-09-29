@@ -5,6 +5,6 @@
 - `lab/02-requirements` 分支与提交历史；
 - `requirements/` 文件目录和 SRS 文档；
 - 合并后的 Git 历史；
-- GitHub 私有仓库页面。
+- GitHub 仓库页面。
 
 截图应与实际提交和标签对应，并遮盖个人信息和凭据。
