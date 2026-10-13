@@ -13,6 +13,14 @@ py -3.12 -m venv .venv
 
 打开 http://127.0.0.1:5000。以后可以用 `powershell -ExecutionPolicy Bypass -File .\start.ps1` 启动；执行策略覆盖只作用于这次启动，不修改全局设置。停止服务按 Ctrl+C。
 
+需要关闭命令窗口后继续使用预览时，从仓库根目录执行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1 -Port 5001 -Background
+```
+
+打开 http://127.0.0.1:5001。后台启动会检查端口占用和页面响应，并显示服务 PID 与 `project/instance/` 下的日志路径。停止本次服务时，对照启动输出执行 `Stop-Process -Id <服务PID>`；如果端口已经被占用，脚本会报告对应 PID，不关闭已有进程。电脑重启后需重新运行启动命令。
+
 其他系统：`python3 -m venv .venv`，随后用 `.venv/bin/python` 执行同样的安装、初始化和启动命令。
 
 ## 演示账号
