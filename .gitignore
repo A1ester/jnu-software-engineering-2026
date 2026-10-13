@@ -3,3 +3,16 @@ __pycache__/
 .venv/
 .vscode/
 *.tmp
+
+# 本地运行及验证数据
+project/instance/
+project/backups/
+.pytest_cache/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+.env
+test-results/

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#164d49">
+    <meta name="description" content="发现校园社团与活动，让社团协作和校园参与更简单。">
+    <title>校园社团活动管理系统 · 青禾</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#activities" aria-label="青禾，返回活动广场">
+          <span class="brand-symbol" aria-hidden="true">禾</span>
+          <span><strong>青禾</strong><small>校园社团与活动</small></span>
+        </a>
+        <div class="sidebar-caption">在校园，找到同频的人</div>
+        <nav id="navigation" aria-label="功能导航"></nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-note"><span class="note-dot"></span>每一份热爱，都有回响</div>
+          <p>校园社团活动管理系统</p>
+        </div>
+      </aside>
+      <div class="main-shell">
+        <header class="topbar">
+          <div class="breadcrumb"><span>校园生活</span><span aria-hidden="true">/</span><strong id="page-label">活动广场</strong></div>
+          <div id="account" class="account-area"></div>
+        </header>
+        <main id="main" tabindex="-1"><div class="initial-loading" role="status">正在打开校园空间…</div></main>
+        <footer class="footer"><span>青禾 · 让热爱在校园发生</span><span>校园社团综合管理与协同平台</span></footer>
+      </div>
+    </div>
+    <div id="toasts" class="toast-stack" role="status" aria-live="polite"></div>
+  </body>
+</html>
