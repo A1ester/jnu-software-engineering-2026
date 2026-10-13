@@ -237,7 +237,7 @@
     const any = Object.values(state.filters).some(Boolean);
     if (any) toolbar.append(button('重置', () => { state.filters = { q: '', theme: '', club_id: '', date: '' }; renderView(); }, 'ghost'));
     return el('div', {}, hero('activities'), section('值得参与的校园活动', activities.length), toolbar,
-      activities.length ? el('div', { class: 'card-grid' }, activities.map(activityCard)) : empty('暂时没有符合条件的活动', any ? '换个主题或日期，再找找喜欢的活动。' : '新的活动正在筹备中，过一会儿再来看看。'));
+      activities.length ? el('div', { class: 'card-grid' }, activities.map(activityCard)) : empty('暂时没有符合条件的活动', any ? '换个主题或日期，再找找喜欢的活动。' : '当前还没有已发布的活动。'));
   }
   function dayKey(value) {
     const d = value instanceof Date ? value : new Date(value);
@@ -281,7 +281,7 @@
     form.append(el('div', { class: 'interest-options' }, themes.map(t => el('label', { class: 'interest-option' }, el('input', { name: 'themes', type: 'checkbox', value: t, checked: state.preferredThemes.includes(t) }), el('span', {}, t)))),
       el('div', { class: 'action-row' }, el('button', { type: 'submit', class: 'btn small' }, '更新兴趣推荐'), state.preferredThemes.length ? button('清除偏好', () => { state.preferredThemes = []; renderView(); }, 'ghost small') : null));
     return el('div', {}, heading('从兴趣出发，遇见新活动', '选择几个喜欢的方向，找找值得期待的校园相聚。'), el('div', { class: 'panel' }, el('h2', {}, '你喜欢什么？'), themes.length ? form : el('p', {}, '新活动发布后，你可以在这里选择兴趣方向。'), el('div', { class: 'info-box' }, '推荐按所选主题匹配优先排序，其次按活动开始时间排序。未选择偏好时，仅按开始时间排序。')),
-      section('为你发现', activities.length), activities.length ? el('div', { class: 'recommendation-grid card-grid' }, activities.map((a, i) => el('div', { class: 'recommended-item' }, activityCard(a, i), el('p', { class: 'recommendation-reason' }, a.recommendation_reason || '按活动时间排序')))) : empty('新的相遇还在路上', '当前暂无可推荐的公开活动。'));
+      section('为你发现', activities.length), activities.length ? el('div', { class: 'recommendation-grid card-grid' }, activities.map((a, i) => el('div', { class: 'recommended-item' }, activityCard(a, i), el('p', { class: 'recommendation-reason' }, a.recommendation_reason || '按活动时间排序')))) : empty('暂无推荐活动', '当前暂无可推荐的公开活动。'));
   }
   async function clubsView() {
     const clubs = await api('/api/clubs');
@@ -289,7 +289,7 @@
     return el('div', {}, hero('clubs'), el('div', { class: 'section-heading' }, el('h2', {}, '从兴趣开始，找到归属'), action),
       clubs.length ? el('div', { class: 'card-grid' }, clubs.map((club, index) => el('article', { class: 'club-card' },
         el('div', { class: 'club-icon', 'aria-hidden': 'true' }, ['影', '书', '趣'][index % 3]), el('h3', {}, club.name), el('p', {}, club.description),
-        el('div', { class: 'card-actions' }, badge(club.status), button('了解社团 ↗', () => clubDetail(club.id), 'ghost small'))))) : empty('社团空间正在生长', '期待更多校园兴趣社团加入。'));
+        el('div', { class: 'card-actions' }, badge(club.status), button('了解社团 ↗', () => clubDetail(club.id), 'ghost small'))))) : empty('暂无社团记录', '期待更多校园兴趣社团加入。'));
   }
   async function clubDetail(id) {
     const modal = dialog('社团介绍'); modal.content.append(el('div', { class: 'loading-state' }, '正在获取社团信息…'));
@@ -588,7 +588,7 @@
       else location.hash = 'dashboard';
     };
     return el('div', {}, heading('把下一件事，安排清楚', '汇总你能处理的任务、申请与审核，只保留尚未完成的事项。'),
-      todos.length ? el('div', { class: 'panel' }, el('div', { class: 'list' }, todos.map(t => row(t.title, `${names[t.kind] || '业务事项'} · ${t.deadline ? `截止：${date(t.deadline)}` : '暂无固定期限'}`, [button('前往处理', () => open(t), 'small')])))) : empty('待办已清空', '该处理的事情已经安排妥当，留一点时间给新的校园体验。'));
+      todos.length ? el('div', { class: 'panel' }, el('div', { class: 'list' }, todos.map(t => row(t.title, `${names[t.kind] || '业务事项'} · ${t.deadline ? `截止：${date(t.deadline)}` : '暂无固定期限'}`, [button('前往处理', () => open(t), 'small')])))) : empty('待办已清空', '当前没有待处理的任务、申请或审核。'));
   }
   async function resourcesView() {
     const [applications, venues] = await Promise.all([api('/api/venue-applications'), api('/api/venues')]);

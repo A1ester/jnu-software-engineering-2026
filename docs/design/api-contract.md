@@ -1,6 +1,6 @@
-# 核心版本接口约定
+# 接口说明
 
-设计日期：2026-10-13。以 requirements-v1.1 为需求输入；首版实现身份、社团治理和成员、活动、报名签到、筹备任务及站内通知。技术方案为 Flask、SQLite 和原生 Web 页面。接口与界面同源，JSON 成功响应统一为 `{ "data": ... }`，失败为 `{ "error": { "code": "...", "message": "中文说明" } }`。列表的 data 是数组，详情的 data 是对象。
+设计日期：2026-10-13。接口依据 requirements-v1.1 设计，覆盖身份认证、社团治理、活动、报名签到、筹备协作、资源和反馈统计。技术方案为 Flask、SQLite 和原生 Web 页面。接口与界面同源，JSON 成功响应统一为 `{ "data": ... }`，失败为 `{ "error": { "code": "...", "message": "中文说明" } }`。列表的 data 是数组，详情的 data 是对象。
 
 ## 会话及输入
 
@@ -22,19 +22,19 @@
 | GET /api/my/applications | 本人申请：id,club_id,club_name,message,status |
 | POST /api/applications/:id/cancel | 本人撤回待处理申请，其他状态拒绝 |
 | GET /api/clubs/:id/applications | 仅所属负责人；包含申请学生显示名 |
-| POST /api/applications/:id/review | `{decision: approve|reject,reason}`，所属负责人 |
+| POST /api/applications/:id/review | `{decision: approve\|reject,reason}`，所属负责人 |
 | GET /api/clubs/:id/members | 所属负责人或管理中心工作人员；id（成员关系）,user_id,display_name,role,active；供成员管理和负责人变更选择 |
 | PATCH /api/clubs/:id/members/:id | `{active: boolean}`，所属负责人；不能停用现任负责人 |
 | POST /api/club-registrations | `{name,description}`，学生申请人 |
 | GET /api/club-registrations | 本人备案，staff 可查看全部；id,name,description,applicant_name,status,reason |
 | POST /api/club-registrations/:id/review | `{decision,reason}`，staff；通过后形成社团及负责人关系 |
-| PATCH /api/clubs/:id/governance | `{status: active|disabled}` 或 `{leader_id: user_id}`，staff；负责人变更须是有效成员并留痕 |
+| PATCH /api/clubs/:id/governance | `{status: active\|disabled}` 或 `{leader_id: user_id}`，staff；负责人变更须是有效成员并留痕 |
 | GET /api/activities | 公开活动，可选 q,theme,club_id,date（开始日 YYYY-MM-DD）,utc_offset（相对 UTC 的分钟偏移，-840～840，默认 0）；日期按给定偏移的本地日区间筛选；Activity 数组 |
 | GET /api/my/activities | 所属负责人所有活动（含草稿），staff 所有待审核活动 |
-| GET /api/activities/:id | Activity，含本人 my_registration:null|{id,status,checked_in}；所属负责人可见非公开详情 |
+| GET /api/activities/:id | Activity，含本人 `my_registration:null\|{id,status,checked_in}`；所属负责人可见非公开详情 |
 | POST /api/activities | `{club_id,title,theme,description,location,capacity,registration_deadline,start_time,end_time,waitlist_enabled}` → Activity |
 | PATCH /api/activities/:id | 同上可编辑字段；仅所属负责人 Draft/Rejected，Rejected 编辑后回 Draft |
-| POST /api/activities/:id/transition | `{action: submit|approve|reject|publish|open_registration|cancel|archive,reason}`，审核 action 仅 staff，其余仅所属负责人 |
+| POST /api/activities/:id/transition | `{action: submit\|approve\|reject\|publish\|open_registration\|cancel\|archive,reason}`，审核 action 仅 staff，其余仅所属负责人 |
 | POST /api/activities/:id/registrations | 无正文，正式或候补（confirmed/waitlisted） |
 | GET /api/my/registrations | 本人报名：id,activity_id,title,status,checked_in,start_time,location |
 | POST /api/registrations/:id/cancel | 本人取消，严格早于截止；候补者可取消候补 |
@@ -56,11 +56,11 @@ Activity：`id,club_id,club_name,title,theme,description,location,capacity,regis
 
 入口 `python project/run.py init-demo` / `python project/run.py serve --port 5000`。所有运行数据位于忽略的 `project/instance/`。演示用户 `student`, `leader`, `member`, `other_leader`, `staff`，公开演示口令统一为 `Demo12345!`，仅 init-demo 创建；学生显示名采用演示标识。演示社团 1 为校园摄影社，社团 2 为读书社。至少提供一个开放报名活动、一个进行中活动和一个待审核活动，以便验证三类用户流程。
 
-`init-demo` 对非空数据库应拒绝覆盖；备份用 SQLite backup API；恢复默认写到指定独立数据库，拒绝覆盖已有目标。记录课程演示限制，不把 Flask 内置服务器或演示账号作为生产部署。
+`init-demo` 拒绝覆盖非空数据库。备份使用 SQLite backup API；恢复写到指定独立数据库，拒绝覆盖已有目标。完整运行步骤见 [运行说明](../../project/README.md)。
 
-## 第二轮：资源、反馈及统计
+## 资源、反馈及统计
 
-以下仍属于 requirements-v1.1 已有范围，不新增需求编号。权限、JSON 格式及事务规则沿用上述约定。
+以下接口的权限、JSON 格式及事务规则沿用上述约定。
 
 | 接口 | 数据及业务 |
 |---|---|
@@ -80,6 +80,6 @@ Activity：`id,club_id,club_name,title,theme,description,location,capacity,regis
 | GET /api/reports | 学生仅本人，staff 全部：id,activity_id,activity_title,reason,status（pending/resolved）,resolution |
 | POST /api/reports/:id/resolve | `{resolution}`；staff处理举报，记录处理结果和审计 |
 
-日历界面按活动开始日分组，使用活动公开列表和本地日期显示；无需重复维护另一份活动数据。任务看板继续使用相同任务状态。已有核心流程的 44 项业务测试及 16 项浏览器检查已通过，第二轮另行验证。
+日历界面按活动开始日分组，使用活动公开列表和本地日期显示。任务看板使用与任务接口相同的状态。测试结果见 [验证记录](verification.md)。
 
 活动详情附带本人评价 `my_feedback:null|{rating,comment}`，仅本人可见，不返回其他学生的评价内容。
