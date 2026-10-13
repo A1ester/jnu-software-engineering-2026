@@ -54,6 +54,8 @@ New-Item -ItemType Directory -Force project/backups | Out-Null
 
 浏览器测试使用可选的 Playwright，脚本为 `project/tests/browser-smoke.cjs`。先用 `python project/tests/browser_fixture.py project/instance/browser-new.sqlite3` 创建独立的新测试数据库（含结束后的评价场景），再用 `python project/run.py serve --port 5002 --database project/instance/browser-new.sqlite3` 启动对应服务，设置 `BASE_URL` 为该服务地址并执行 `node project/tests/browser-smoke.cjs`。脚本会实际提交申请、审核、报名及任务变化，不能指向正在使用的数据库。
 
+随后可在同一测试服务上执行 `node project/tests/browser-style.cjs`，检查本地字体、图表数据、悬停按压、状态配色和手机布局，截图写入已排除版本管理的 `test-results/`。字体来源及重新生成方法见 `project/src/campus_clubs/static/fonts/README.md`。
+
 ## 使用范围
 
 这一版优先交付需求中的核心闭环。项目内置服务用于单机课程演示，默认只监听本机；实际校园部署仍需真实业务规则复核、正式账号管理、HTTPS、生产服务部署及负载验证。自动化测试结果仅证明对应场景，不能替代真实用户可用性测试或生产验收。

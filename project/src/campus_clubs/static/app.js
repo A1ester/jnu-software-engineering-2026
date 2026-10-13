@@ -140,13 +140,15 @@
   function row(title, meta, actions = [], description) {
     return el('div', { class: 'list-row' }, el('div', { class: 'row-main' }, el('div', { class: 'row-title' }, title), el('div', { class: 'row-meta' }, meta), description ? el('div', { class: 'row-description' }, description) : null), el('div', { class: 'row-actions' }, actions));
   }
-  function hero(type) {
+  function hero(type, count) {
     const club = type === 'clubs';
     return el('section', { class: 'hero' }, el('div', { class: 'hero-copy' },
-      el('div', { class: 'eyebrow' }, 'CAMPUS · TOGETHER'),
+      el('div', { class: 'eyebrow' }, club ? 'CLUB DIRECTORY / 社团发现' : 'CAMPUS ACTIVITIES / 活动广场'),
       el('h1', {}, club ? '找到你的同频伙伴，' : '让热爱，', el('br'), el('em', {}, club ? '从一个社团开始。' : '在校园发生。')),
       el('p', {}, club ? '在这里发现兴趣、认识伙伴，和喜欢的人一起，把平凡的校园日常过得有声有色。' : '走出教室，加入一场期待已久的活动。把好奇付诸行动，让每一次参与都成为值得收藏的校园记忆。')),
-      el('div', { class: 'hero-art', 'aria-hidden': 'true' }, el('span', { class: 'art-circle' }), el('span', { class: 'art-card' }), el('span', { class: 'art-card second' }), el('span', { class: 'art-leaf' }), el('span', { class: 'art-leaf second' }), el('span', { class: 'art-dot' })));
+      el('div', { class: 'hero-summary' }, el('div', { class: 'hero-annotation' }, club ? '当前校园社团' : '当前列表活动'),
+        el('div', { class: 'hero-count' }, el('strong', { class: 'hero-number' }, String(count).padStart(2, '0')), el('span', { class: 'hero-unit' }, club ? '个' : '场')),
+        el('div', { class: 'hero-annotation' }, club ? '选择社团，查看介绍与申请方式' : '浏览详情，查看时间与报名状态')));
   }
   async function perform(control, work, message, refresh = true) {
     if (control) control.disabled = true;
@@ -236,7 +238,7 @@
       el('div', { class: 'search-field' }, el('span', { class: 'search-icon', 'aria-hidden': 'true' }, '⌕'), search), theme, club, day, el('button', { type: 'submit', class: 'btn' }, '筛选'));
     const any = Object.values(state.filters).some(Boolean);
     if (any) toolbar.append(button('重置', () => { state.filters = { q: '', theme: '', club_id: '', date: '' }; renderView(); }, 'ghost'));
-    return el('div', {}, hero('activities'), section('值得参与的校园活动', activities.length), toolbar,
+    return el('div', {}, hero('activities', activities.length), section('值得参与的校园活动', activities.length), toolbar,
       activities.length ? el('div', { class: 'card-grid' }, activities.map(activityCard)) : empty('暂时没有符合条件的活动', any ? '换个主题或日期，再找找喜欢的活动。' : '当前还没有已发布的活动。'));
   }
   function dayKey(value) {
@@ -286,7 +288,7 @@
   async function clubsView() {
     const clubs = await api('/api/clubs');
     const action = isStudent() ? button('＋ 申请成立社团', () => filingDialog(), 'secondary small') : null;
-    return el('div', {}, hero('clubs'), el('div', { class: 'section-heading' }, el('h2', {}, '从兴趣开始，找到归属'), action),
+    return el('div', {}, hero('clubs', clubs.length), el('div', { class: 'section-heading' }, el('h2', {}, '从兴趣开始，找到归属'), action),
       clubs.length ? el('div', { class: 'card-grid' }, clubs.map((club, index) => el('article', { class: 'club-card' },
         el('div', { class: 'club-icon', 'aria-hidden': 'true' }, ['影', '书', '趣'][index % 3]), el('h3', {}, club.name), el('p', {}, club.description),
         el('div', { class: 'card-actions' }, badge(club.status), button('了解社团 ↗', () => clubDetail(club.id), 'ghost small'))))) : empty('暂无社团记录', '期待更多校园兴趣社团加入。'));
@@ -556,6 +558,33 @@
   }
   function stat(label, count, hint) { return el('div', { class: 'stat-card' }, el('div', { class: 'label' }, label), el('strong', {}, count), el('div', { class: 'hint' }, hint)); }
 
+  function statisticsChart(activities) {
+    if (!activities.length) return null;
+    const series = [
+      { key: 'registration_count', label: '正式报名', tone: 'primary' },
+      { key: 'check_in_count', label: '现场签到', tone: 'secondary' },
+      { key: 'feedback_count', label: '活动评价', tone: 'tertiary' },
+    ];
+    const max = Math.max(1, ...activities.flatMap(activity => series.map(item => Number(activity[item.key]) || 0)));
+    const chart = el('section', { class: 'panel statistics-chart', 'aria-label': '已结束活动参与数据对比' },
+      el('h2', {}, '活动参与对比'),
+      el('p', { class: 'tiny' }, '每组依次显示正式报名、签到和评价数量，数据与下方明细一致。'),
+      el('div', { class: 'chart-legend' }, series.map(item => el('span', {}, el('i', { class: `chart-swatch ${item.tone}`, 'aria-hidden': 'true' }), item.label))));
+    activities.forEach(activity => {
+      const group = el('div', { class: 'chart-row' }, el('h3', { class: 'chart-title' }, activity.title));
+      series.forEach(item => {
+        const count = Number(activity[item.key]) || 0;
+        const bar = el('div', { class: `chart-bar ${item.tone}`, 'aria-hidden': 'true' });
+        bar.style.setProperty('--bar-size', `${count / max * 100}%`);
+        if (!count) bar.classList.add('is-zero');
+        group.append(el('div', { class: 'chart-series', role: 'img', 'aria-label': `${activity.title}，${item.label} ${count} 人` },
+          el('span', { class: 'chart-series-label' }, item.label), el('div', { class: 'chart-track' }, bar), el('strong', { class: 'chart-value' }, count)));
+      });
+      chart.append(group);
+    });
+    return chart;
+  }
+
   async function recordsView() {
     const [registrations, applications, filings, reports] = await Promise.all([api('/api/my/registrations'), api('/api/my/applications'), api('/api/club-registrations'), isStudent() ? api('/api/reports') : Promise.resolve([])]);
     const result = el('div', {}, heading('我的参与', '每一次申请、报名和相聚，都在这里留下记录。', isStudent() ? button('＋ 申请成立社团', () => filingDialog(), 'secondary small') : null));
@@ -610,8 +639,9 @@
     const count = key => list.reduce((sum, a) => sum + Number(a[key] || 0), 0);
     const csv = el('a', { class: 'btn secondary small', href: `/api/clubs/${state.statisticsClub}/statistics.csv`, download: `${data.club_name || '社团'}-活动统计.csv` }, '下载统计 CSV');
     const table = el('table', {}, el('thead', {}, el('tr', {}, ['活动', '状态', '正式报名', '现场签到', '活动评价'].map(t => el('th', { scope: 'col' }, t)))), el('tbody', {}, list.map(a => el('tr', {}, el('td', {}, el('button', { type: 'button', class: 'inline-link', onclick: () => activityDetail(a.id) }, a.title)), el('td', {}, badge(a.status)), el('td', {}, a.registration_count), el('td', {}, a.check_in_count), el('td', {}, a.feedback_count)))));
-    return el('div', {}, heading('看见每一次参与', '以汇总数据回顾已结束与归档活动，帮助社团改进下一次组织。', csv), el('div', { class: 'toolbar' }, select, el('span', { class: 'count-label' }, '统计仅包含已结束与已归档活动，不包含候补和已取消报名。')),
+    return el('div', {}, heading('看见每一次参与', '以汇总数据回顾已结束与归档活动，帮助社团改进下一次组织。', csv), el('div', { class: 'toolbar statistics-toolbar' }, select, el('span', { class: 'count-label' }, '统计仅包含已结束与已归档活动，不包含候补和已取消报名。')),
       el('div', { class: 'stats-grid' }, stat('已完成活动', list.length, data.club_name), stat('正式报名', count('registration_count'), '参加名额的有效报名'), stat('现场签到', count('check_in_count'), '已登记到场参与'), stat('活动评价', count('feedback_count'), '来自已签到参与者')),
+      statisticsChart(list),
       el('div', { class: 'panel' }, list.length ? el('div', { class: 'table-wrap' }, table) : empty('活动结束后，统计在这里汇聚', '目前这个社团还没有已结束或归档的活动。')));
   }
   async function reportsView() {
@@ -697,5 +727,14 @@
     try { await session(); await renderView(); }
     catch (error) { main.replaceChildren(heading('校园空间连接中断', '请检查本地服务是否已经启动。'), el('div', { class: 'error-box' }, error.message), el('div', { class: 'action-row action-gap' }, button('重新连接', () => start(), 'secondary'))); }
   }
+  function syncStatusAccent() {
+    // Keep yellow and blue as the two structural colors; use one semantic color at a time.
+    const hasError = document.querySelector('.status-badge.red, .toast.error, .error-box:not(:empty)');
+    const hasSuccess = document.querySelector('.status-badge.green');
+    const accent = hasError ? 'red' : hasSuccess ? 'green' : 'none';
+    if (document.body.dataset.statusAccent !== accent) document.body.dataset.statusAccent = accent;
+  }
+  new MutationObserver(syncStatusAccent).observe(document.body, { childList: true, subtree: true });
+  syncStatusAccent();
   start();
 })();
