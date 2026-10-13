@@ -33,7 +33,18 @@ powershell -ExecutionPolicy Bypass -File .\start.ps1 -Port 5001 -Background
 | other_leader | 读书社负责人：用于核对跨社团权限边界 |
 | staff | 学校社团管理中心工作人员：活动与备案审核、社团治理、审计和日志 |
 
-演示口令均为 `Demo12345!`。账号和业务数据仅用于课程演示，不对应真实学生或工作人员。只有明确执行 init-demo 才会创建这些账号；非空数据库拒绝重复初始化，已有记录不会被覆盖。
+上述内置账号的演示口令均为 `Demo12345!`，账号及配套活动数据仅用于课程演示，不对应真实学生或工作人员。只有明确执行 init-demo 才会创建这些账号；非空数据库拒绝重复初始化，已有记录不会被覆盖。
+
+## 录入实际社团资料
+
+本地工具 `project/tools/setup_club.py` 可将经社团负责人确认的资料录入现有数据库。JSON 包含 `name`、`school`、`campus`、`description`、`leader_username`、`leader_display_name` 六个字段，保存在已排除版本管理的 `project/instance/`。例如：
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 project/tools/setup_club.py import project/instance/club-profile.json
+.\.venv\Scripts\python.exe -X utf8 project/tools/setup_club.py password <负责人账号>
+```
+
+资料导入不创建活动或学校审核记录；已有其他负责人时拒绝覆盖。新增账号只有在本机交互设置密码后才可登录，密码不写入资料文件或命令行。密码设置会使该账号已有会话失效。社长以学生基础角色和所属社团负责人身份使用系统，不获得跨社团管理权限。
 
 ## 建议演示顺序
 

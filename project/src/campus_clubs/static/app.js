@@ -679,6 +679,7 @@
     const [audit, logs] = await Promise.all([api('/api/audit'), api('/api/logs')]);
     const actionNames = {
       demo_initialized: '初始化课程演示资料', lifecycle_advance: '推进活动生命周期',
+      club_profile_imported: '录入社团预览资料', account_password_set: '设置账号密码',
       application_created: '提交入社申请', application_approved: '通过入社申请',
       application_rejected: '驳回入社申请', application_cancelled: '撤回入社申请',
       membership_changed: '调整社团成员状态', club_registration_created: '提交社团备案',
