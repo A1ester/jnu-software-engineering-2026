@@ -1,0 +1,2 @@
+# Shell launchers are executed on Linux, including archives exported on Windows.
+*.sh text eol=lf
