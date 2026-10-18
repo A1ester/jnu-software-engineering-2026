@@ -77,6 +77,8 @@ New-Item -ItemType Directory -Force project/backups | Out-Null
 
 ## 使用范围
 
+短期云端部署验证见 [临时云端测试部署](deploy/README.md)，使用独立数据库和站点访问口令。
+
 这一版优先交付需求中的核心闭环。项目内置服务用于单机课程演示，默认只监听本机；实际校园部署仍需真实业务规则复核、正式账号管理、HTTPS、生产服务部署及负载验证。自动化测试结果仅证明对应场景，不能替代真实用户可用性测试或生产验收。
 
 需求输入见 `labs/lab02-requirements/SRS.md`，设计与接口约定见 `docs/design/`。

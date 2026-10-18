@@ -201,6 +201,7 @@ body[data-status-accent=red] .status-badge.red,body[data-status-accent=red] .err
 .initial-loading { padding:70px 20px; text-align:center; }
 .error-box { padding:15px 18px; font-size:12px; line-height:1.85; }
 .info-box { margin:16px 0; padding:13px 16px; background:var(--blue); font-size:11px; line-height:1.85; }
+.cloud-notice { margin:20px 38px 0; }
 .inline-link { padding:5px 9px; background:var(--paper); font-size:12px; text-decoration:underline; text-underline-offset:4px; }
 .tabs { display:flex; gap:12px; flex-wrap:wrap; margin:0 0 26px; padding-bottom:20px; border-bottom:var(--border); }
 .tab { padding:9px 15px; font-size:12px; font-weight:800; }
@@ -328,6 +329,7 @@ td .btn { white-space:nowrap; }
   .task-column { padding:15px; }
 }
 @media(max-width:800px) {
+  .cloud-notice { margin:20px 21px 0; }
   .app-shell { display:block; }
   .sidebar { position:relative; height:auto; display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; gap:20px; padding:18px 20px 12px; border-right:0; border-bottom:var(--border); }
   .brand { padding:0; }
@@ -368,6 +370,7 @@ td .btn { white-space:nowrap; }
   .stat-card strong { font-size:128px; }
 }
 @media(max-width:520px) {
+  .cloud-notice { margin:18px 16px 0; }
   .sidebar { padding:18px 16px 11px; gap:20px; }
   .nav-link { padding:8px 10px; }
   .nav-badge { margin-left:2px; }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#FBF3E4">
     <meta name="description" content="发现校园社团与活动，让社团协作和校园参与更简单。">
-    <title>校园社团活动管理系统 · 青禾</title>
+    <title>{% if config.get('CLOUD_TEST_MODE') %}测试站点 · {% endif %}校园社团活动管理系统 · 青禾</title>
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
@@ -30,6 +30,7 @@
           <div class="breadcrumb"><span>校园生活</span><span aria-hidden="true">/</span><strong id="page-label">活动广场</strong></div>
           <div id="account" class="account-area"></div>
         </header>
+        {% if config.get('CLOUD_TEST_MODE') %}<div class="info-box cloud-notice" role="status">云端测试站点 · 仅用于部署流程验证</div>{% endif %}
         <main id="main" tabindex="-1"><div class="initial-loading" role="status">正在打开校园空间…</div></main>
         <footer class="footer"><span>青禾 · 让热爱在校园发生</span><span>校园社团综合管理与协同平台</span></footer>
       </div>
