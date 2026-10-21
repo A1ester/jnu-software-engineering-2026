@@ -1,0 +1,43 @@
+{
+  "source_file": "校园社团活动管理系统需求调查问卷.xlsx",
+  "source_sheet": "清洗后数据",
+  "sha256": "d44c46a15f999caf46cb9537e1b01a3134477013304f270835614be880c16670",
+  "respondent_confirmation": "项目负责人确认所有修订均由原填写者逐项确认",
+  "sample_size": 369,
+  "unique_response_ids": 369,
+  "sampling": "微信群线上自愿招募的便利样本；学校分布未采集，不代表某校总体",
+  "collection_start": "2026-10-20T20:33:37",
+  "collection_end": "2026-10-21T14:17:11",
+  "revision_records": 2600,
+  "revised_responses": 353,
+  "quality": {
+    "within_question_conflict_responses": 0,
+    "cross_question_review_responses": 0,
+    "malformed_responses": 0,
+    "duplicate_full_response_groups": 0,
+    "duration_min_seconds": 181,
+    "duration_median_seconds": 241,
+    "duration_max_seconds": 301
+  },
+  "groups": {
+    "全体": 369,
+    "参加过活动": 190,
+    "筹备或负责人经历": 187,
+    "有场地物资接触经历": 243
+  },
+  "information_scatter": {
+    "judged_n": 343,
+    "unable_n": 26,
+    "agree_n": 129,
+    "disagree_n": 137,
+    "neutral_n": 77,
+    "mean_among_judged": 2.93
+  },
+  "selected": {
+    "waitlist_n": 163,
+    "no_reminder_n": 64,
+    "signup_information_n": 106,
+    "signup_confirmation_n": 71,
+    "no_signup_experience_n": 38
+  }
+}
