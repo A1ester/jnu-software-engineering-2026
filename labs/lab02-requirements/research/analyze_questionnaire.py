@@ -115,7 +115,7 @@ def main():
     rev=list(book['修正记录'].values)[1:]
     summary={
         'source_file':args.source.name,'source_sheet':'清洗后数据','sha256':digest,
-        'respondent_confirmation':'项目负责人确认所有修订均由原填写者逐项确认',
+        'respondent_confirmation':'全部修订均由原填写者逐项确认',
         'sample_size':n,'unique_response_ids':len(set(r[0] for r in rows)),
         'sampling':'微信群线上自愿招募的便利样本；学校分布未采集，不代表某校总体',
         'collection_start':min(dates).isoformat(),'collection_end':max(dates).isoformat(),

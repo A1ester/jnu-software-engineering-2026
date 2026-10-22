@@ -50,4 +50,4 @@ flowchart TB
     GOV --> FR031[FR-031 审计查看]
 ```
 
-Must 构成当前课程版本的最低闭环；Should 和 Could 的实施仍需结合课程时间与评审结论决定。
+Must、Should和Could表示需求优先级，当前实现与验证情况见需求追踪矩阵。
