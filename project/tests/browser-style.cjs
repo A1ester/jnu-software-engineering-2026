@@ -131,7 +131,7 @@ async function main() {
     check('Chart counts and bar proportions match table; halftone and large statistics');
 
     await staff.getByRole('combobox', { name: '统计社团', exact: true }).selectOption('2');
-    await staff.getByText('活动结束后，统计在这里汇聚', { exact: true }).waitFor();
+    await staff.getByText('暂无活动统计', { exact: true }).waitFor();
     assert.equal(await staff.locator('.statistics-chart').count(), 0);
     assert.deepEqual(await staff.locator('.stat-card strong').allTextContents(), ['0', '0', '0', '0']);
     check('Empty club statistics show zero counts without fabricated bars');

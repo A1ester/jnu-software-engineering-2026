@@ -1,6 +1,6 @@
 # Product Backlog
 
-本 Backlog 根据当前 SRS 整理。Estimate 使用相对 Story Points，当前无历史 Velocity。2026-10-13 已完成本地演示版本的功能实现与对应自动化验证；正式部署、真实用户及非功能目标验证仍在后续迭代推进。每条 User Story 只描述一个主要 Actor；跨角色业务通过相互关联的独立条目表达。
+本 Backlog 根据当前 SRS 整理。Estimate 使用相对 Story Points，当前无历史 Velocity。2026-10-13 已完成本地演示版本的功能实现与对应自动化验证；正式部署、真实用户及非功能目标验证仍在后续迭代推进。User Story按主要参与者描述目标，跨角色流程由关联条目共同表达。
 
 | PB ID | User Story | 关联 FR | Priority | Estimate | Target Iteration | Status |
 |---|---|---|---|---:|---|---|
@@ -15,7 +15,7 @@
 | PB-009 | 作为社团负责人，我希望提交场地申请并记录活动物资需求，以便准备本社团活动资源。 | FR-024、FR-027 | Should/Could | 5 SP | Iteration 4 | DONE |
 | PB-010 | 作为社团负责人，我希望查看并导出本社团活动统计，以便复盘活动成效。 | FR-026、FR-030 | Should/Could | 5 SP | Iteration 4 | DONE |
 | PB-011 | 作为普通学生，我希望获得规则明确的活动推荐并举报不当活动，以便发现合适活动并反馈问题。 | FR-028～FR-029 | Could | 5 SP | Iteration 4 | DONE |
-| PB-012 | 作为课程项目维护者，我希望对齐需求、模型、追踪和项目计划，以便后续设计建立在一致基线上。 | 文档工作，不新增 FR | Must | 5 SP | Iteration 0 | DONE |
+| PB-012 | 作为课程项目维护者，我希望维护需求、模型、追踪矩阵和项目计划，以便设计与实现使用同一版本的需求。 | 文档工作，不新增 FR | Must | 5 SP | Iteration 0 | DONE |
 | PB-013 | 作为课程项目维护者，我希望执行系统级测试、缺陷修复和发布检查，以便交付可核对的课程成果。 | 全部已实现 FR/NFR | Must | 8 SP | Iteration 5 | IN_PROGRESS |
 | PB-014 | 作为社团负责人，我希望处理本社团入社申请并维护成员身份，以便管理本社团成员。 | FR-005、FR-032 | Must | 5 SP | Iteration 1 | DONE |
 | PB-015 | 作为学校社团管理中心工作人员，我希望审核社团提交的活动，以便保证活动符合学校社团管理要求。 | FR-008 | Must | 5 SP | Iteration 2 | DONE |

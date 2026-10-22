@@ -197,7 +197,7 @@
   function requireLogin() { if (state.user) return true; loginDialog(); return false; }
 
   function loginDialog() {
-    const modal = dialog('登录校园空间', '用自己的角色，参与校园生活。');
+    const modal = dialog('登录校园空间', '登录后可报名活动、查看申请进度或管理所属社团。');
     const form = el('form', {});
     const username = field('账号', 'username', { value: 'student', required: true, autocomplete: 'username', maxlength: 80 });
     const password = field('密码', 'password', { type: 'password', value: 'Demo12345!', required: true, autocomplete: 'current-password', maxlength: 128 });
@@ -208,7 +208,7 @@
       choices.querySelectorAll('button').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
       event.currentTarget.classList.add('active'); event.currentTarget.setAttribute('aria-pressed', 'true');
     }, 'aria-pressed': name === 'student' ? 'true' : 'false' }, label, el('small', {}, name))));
-    form.append(el('div', { class: 'login-intro' }, el('div', { class: 'login-mark', 'aria-hidden': 'true' }, '禾'), el('h3', {}, '你好，校园同路人'), el('p', {}, '发现新活动，管理社团，记录每一次参与。')),
+    form.append(el('div', { class: 'login-intro' }, el('div', { class: 'login-mark', 'aria-hidden': 'true' }, '禾'), el('h3', {}, '欢迎来到青禾'), el('p', {}, '发现新活动，管理社团，记录每一次参与。')),
       el('div', { class: 'disclosure' }, '课程演示账号仅在演示数据初始化后可用。选择一个角色即可体验；演示口令为 Demo12345!，不用于真实校园账号。'), choices, username, password);
     modal.content.append(formSubmit(form, modal, '进入校园空间', async data => {
       const result = await api('/api/login', 'POST', { username: data.get('username'), password: data.get('password') });
@@ -238,8 +238,8 @@
       el('div', { class: 'search-field' }, el('span', { class: 'search-icon', 'aria-hidden': 'true' }, '⌕'), search), theme, club, day, el('button', { type: 'submit', class: 'btn' }, '筛选'));
     const any = Object.values(state.filters).some(Boolean);
     if (any) toolbar.append(button('重置', () => { state.filters = { q: '', theme: '', club_id: '', date: '' }; renderView(); }, 'ghost'));
-    return el('div', {}, hero('activities', activities.length), section('值得参与的校园活动', activities.length), toolbar,
-      activities.length ? el('div', { class: 'card-grid' }, activities.map(activityCard)) : empty('暂时没有符合条件的活动', any ? '换个主题或日期，再找找喜欢的活动。' : '当前还没有已发布的活动。'));
+    return el('div', {}, hero('activities', activities.length), section('公开活动', activities.length), toolbar,
+      activities.length ? el('div', { class: 'card-grid' }, activities.map(activityCard)) : empty('暂时没有符合条件的活动', any ? '请尝试其他主题或日期。' : '当前还没有已发布的活动。'));
   }
   function dayKey(value) {
     const d = value instanceof Date ? value : new Date(value);
@@ -272,9 +272,9 @@
         el('span', { class: 'calendar-preview', 'aria-hidden': 'true' }, dayActivities.slice(0, 2).map(a => el('span', {}, a.title)))));
     }
     const selected = groups.get(state.calendarDay) || [];
-    return el('div', {}, heading('把期待，写进日历', '活动按开始日显示，日期与时间采用你所在的本地时区。'), el('div', { class: 'panel' }, header, grid),
+    return el('div', {}, heading('活动日历', '活动按开始日显示，日期和时间按本地时区显示。'), el('div', { class: 'panel' }, header, grid),
       section(`${Number(state.calendarDay.slice(5, 7))} 月 ${Number(state.calendarDay.slice(8))} 日的活动`, selected.length),
-      selected.length ? el('div', { class: 'card-grid' }, selected.map(activityCard)) : empty('这一天暂时没有活动', '换一个日期，看看接下来有哪些相聚。'));
+      selected.length ? el('div', { class: 'card-grid' }, selected.map(activityCard)) : empty('这一天暂时没有活动', '可切换日期查看其他活动。'));
   }
   async function recommendationsView() {
     const [activities, all] = await Promise.all([api(`/api/recommendations${state.preferredThemes.length ? `?${new URLSearchParams({ themes: state.preferredThemes.join(',') })}` : ''}`), api('/api/activities')]);
@@ -282,16 +282,16 @@
     const form = el('form', { onsubmit: event => { event.preventDefault(); state.preferredThemes = new FormData(form).getAll('themes'); renderView(); } });
     form.append(el('div', { class: 'interest-options' }, themes.map(t => el('label', { class: 'interest-option' }, el('input', { name: 'themes', type: 'checkbox', value: t, checked: state.preferredThemes.includes(t) }), el('span', {}, t)))),
       el('div', { class: 'action-row' }, el('button', { type: 'submit', class: 'btn small' }, '更新兴趣推荐'), state.preferredThemes.length ? button('清除偏好', () => { state.preferredThemes = []; renderView(); }, 'ghost small') : null));
-    return el('div', {}, heading('从兴趣出发，遇见新活动', '选择几个喜欢的方向，找找值得期待的校园相聚。'), el('div', { class: 'panel' }, el('h2', {}, '你喜欢什么？'), themes.length ? form : el('p', {}, '新活动发布后，你可以在这里选择兴趣方向。'), el('div', { class: 'info-box' }, '推荐按所选主题匹配优先排序，其次按活动开始时间排序。未选择偏好时，仅按开始时间排序。')),
-      section('为你发现', activities.length), activities.length ? el('div', { class: 'recommendation-grid card-grid' }, activities.map((a, i) => el('div', { class: 'recommended-item' }, activityCard(a, i), el('p', { class: 'recommendation-reason' }, a.recommendation_reason || '按活动时间排序')))) : empty('暂无推荐活动', '当前暂无可推荐的公开活动。'));
+    return el('div', {}, heading('兴趣推荐', '选择感兴趣的主题，查看匹配的公开活动。'), el('div', { class: 'panel' }, el('h2', {}, '选择活动主题'), themes.length ? form : el('p', {}, '新活动发布后，你可以在这里选择兴趣方向。'), el('div', { class: 'info-box' }, '推荐按所选主题匹配优先排序，其次按活动开始时间排序。未选择偏好时，仅按开始时间排序。')),
+      section('推荐活动', activities.length), activities.length ? el('div', { class: 'recommendation-grid card-grid' }, activities.map((a, i) => el('div', { class: 'recommended-item' }, activityCard(a, i), el('p', { class: 'recommendation-reason' }, a.recommendation_reason || '按活动时间排序')))) : empty('暂无推荐活动', '当前暂无可推荐的公开活动。'));
   }
   async function clubsView() {
     const clubs = await api('/api/clubs');
     const action = isStudent() ? button('＋ 申请成立社团', () => filingDialog(), 'secondary small') : null;
-    return el('div', {}, hero('clubs', clubs.length), el('div', { class: 'section-heading' }, el('h2', {}, '从兴趣开始，找到归属'), action),
+    return el('div', {}, hero('clubs', clubs.length), el('div', { class: 'section-heading' }, el('h2', {}, '校园社团'), action),
       clubs.length ? el('div', { class: 'card-grid' }, clubs.map((club, index) => el('article', { class: 'club-card' },
         el('div', { class: 'club-icon', 'aria-hidden': 'true' }, ['影', '书', '趣'][index % 3]), el('h3', {}, club.name), el('p', {}, club.description),
-        el('div', { class: 'card-actions' }, badge(club.status), button('了解社团 ↗', () => clubDetail(club.id), 'ghost small'))))) : empty('暂无社团记录', '期待更多校园兴趣社团加入。'));
+        el('div', { class: 'card-actions' }, badge(club.status), button('了解社团 ↗', () => clubDetail(club.id), 'ghost small'))))) : empty('暂无社团记录', '社团资料录入后会显示在这里。'));
   }
   async function clubDetail(id) {
     const modal = dialog('社团介绍'); modal.content.append(el('div', { class: 'loading-state' }, '正在获取社团信息…'));
@@ -305,7 +305,7 @@
       else if (isStudent() && !isMember(id) && club.status === 'active') actions.append(button('申请加入社团', () => applicationDialog(club)));
       else if (isMember(id)) modal.content.append(el('div', { class: 'info-box' }, isLeader(id) ? '你是这个社团的负责人，可在工作台管理成员和活动。' : '你已加入这个社团。可以参与社团活动和筹备协作。'));
       if (isLeader(id)) { actions.append(button('成员与入社申请', () => membershipDialog(club), 'secondary')); actions.append(button('创建社团活动', () => activityForm(null, id), 'secondary')); }
-      if (isStaff()) actions.append(button('社团治理', () => governanceDialog(club), 'secondary'));
+      if (isStaff()) actions.append(button('社团管理', () => governanceDialog(club), 'secondary'));
       actions.append(button('浏览社团活动', () => { modal.node.close(); state.filters = { q: '', theme: '', club_id: String(id), date: '' }; location.hash = 'activities'; renderView(); }, 'ghost'));
       modal.content.append(actions);
     } catch (error) { if (modal.node.isConnected) modal.content.replaceChildren(el('div', { class: 'error-box' }, error.message)); }
@@ -313,7 +313,7 @@
   function applicationDialog(club) {
     if (!requireLogin()) return;
     const modal = dialog('申请加入社团', club.name);
-    const form = el('form', {}, field('简单介绍自己和想加入的理由', 'message', { type: 'textarea', required: true, maxlength: 1000, placeholder: '分享你的兴趣、期待，或者愿意一起完成的事…' }));
+    const form = el('form', {}, field('简单介绍自己和想加入的理由', 'message', { type: 'textarea', required: true, maxlength: 1000, placeholder: '简要说明兴趣、相关经历和申请理由。' }));
     modal.content.append(formSubmit(form, modal, '提交申请', data => api(`/api/clubs/${club.id}/applications`, 'POST', { message: data.get('message') }), '入社申请已提交，可在“我的参与”查看进度'));
   }
   function filingDialog() {
@@ -336,16 +336,16 @@
     } catch (error) { if (modal.node.isConnected) modal.content.replaceChildren(el('div', { class: 'error-box' }, error.message)); }
   }
   async function governanceDialog(club) {
-    const modal = dialog('社团治理', `当前负责人：${club.leader_name || '尚未指定'}`);
+    const modal = dialog('社团管理', `当前负责人：${club.leader_name || '尚未指定'}`);
     modal.content.append(el('div', { class: 'loading-state' }, '正在获取有效成员…'));
     try {
       const members = await api(`/api/clubs/${club.id}/members`);
       if (!modal.node.isConnected) return;
-      const statusForm = el('form', {}, field('社团业务状态', 'status', { choices: [{ value: 'active', label: '正常' }, { value: 'disabled', label: '停用' }], value: club.status, help: '停用后暂停社团业务操作，历史记录仍保留。' }));
+      const statusForm = el('form', {}, field('社团状态', 'status', { choices: [{ value: 'active', label: '正常' }, { value: 'disabled', label: '停用' }], value: club.status, help: '停用后暂停社团业务操作，历史记录仍保留。' }));
       const candidates = members.filter(m => m.active);
       const leaderForm = el('form', {}, field('确认新负责人', 'leader_id', { required: true, choices: [{ value: '', label: '请选择有效社团成员' }, ...candidates.map(m => ({ value: m.user_id, label: `${m.display_name}${m.role === 'leader' ? '（现任负责人）' : ''}` }))], help: '负责人变更由管理中心确认，并记录变更信息。' }));
-      modal.content.replaceChildren(el('div', { class: 'info-box' }, '管理中心负责跨社团治理。负责人调整仅可选择本社团的有效成员。'),
-        el('h3', { class: 'detail-section-title' }, '业务状态'), formSubmit(statusForm, modal, '保存业务状态', data => api(`/api/clubs/${club.id}/governance`, 'PATCH', { status: data.get('status') }), '社团业务状态已更新'),
+      modal.content.replaceChildren(el('div', { class: 'info-box' }, '管理中心可管理各社团的状态与负责人。新负责人须为本社团的有效成员。'),
+        el('h3', { class: 'detail-section-title' }, '社团状态'), formSubmit(statusForm, modal, '保存社团状态', data => api(`/api/clubs/${club.id}/governance`, 'PATCH', { status: data.get('status') }), '社团状态已更新'),
         el('h3', { class: 'detail-section-title' }, '负责人变更'), formSubmit(leaderForm, modal, '确认负责人变更', data => api(`/api/clubs/${club.id}/governance`, 'PATCH', { leader_id: Number(data.get('leader_id')) }), '社团负责人已更新'));
     } catch (error) { if (modal.node.isConnected) modal.content.replaceChildren(el('div', { class: 'error-box' }, error.message)); }
   }
@@ -388,11 +388,11 @@
       const registration = a.my_registration;
       if (isStudent() && (!registration || registration.status === 'cancelled') && a.status === 'RegistrationOpen') {
         const waitlist = a.registered_count >= a.capacity;
-        if (!waitlist || a.waitlist_enabled) actions.append(button(waitlist ? '加入候补名单' : '报名参加', event => perform(event.currentTarget, () => api(`/api/activities/${id}/registrations`, 'POST', {}), waitlist ? '已加入候补名单，有空位时将自动转正' : '报名成功，期待你的参与').then(ok => { if (ok) activityDetail(id); })));
+        if (!waitlist || a.waitlist_enabled) actions.append(button(waitlist ? '加入候补名单' : '报名参加', event => perform(event.currentTarget, () => api(`/api/activities/${id}/registrations`, 'POST', {}), waitlist ? '已加入候补。报名开放且未截止时，如有名额将按顺序转正。' : '报名成功，可在“我的参与”查看记录。').then(ok => { if (ok) activityDetail(id); })));
         else modal.content.append(el('div', { class: 'info-box' }, '本次活动名额已满，暂不开放候补。'));
       }
       if (registration && ['confirmed', 'waitlisted'].includes(registration.status)) {
-        modal.content.append(el('div', { class: 'info-box' }, registration.checked_in ? '你已完成本次活动签到。' : registration.status === 'waitlisted' ? '你已在候补名单中，名额释放后将自动转正并收到通知。' : '你已成功报名。活动开始后，请联系现场社团工作人员登记签到。'));
+        modal.content.append(el('div', { class: 'info-box' }, registration.checked_in ? '你已完成本次活动签到。' : registration.status === 'waitlisted' ? '你已加入候补。报名开放且未截止时，如有名额将按顺序转正并通知。' : '你已成功报名。活动开始后，请联系现场社团工作人员登记签到。'));
         if (!registration.checked_in && new Date() < new Date(a.registration_deadline)) actions.append(button('取消报名', event => perform(event.currentTarget, () => api(`/api/registrations/${registration.id}/cancel`, 'POST', {}), '报名已取消').then(ok => { if (ok) activityDetail(id); }), 'danger'));
       }
       if (isLeader(a.club_id)) {
@@ -418,12 +418,12 @@
     const a = activity || {};
     const form = el('form', {},
       el('div', { class: 'form-grid' }, field('所属社团', 'club_id', { value: a.club_id || selectedClub || clubs[0].club_id, choices: clubs.map(c => ({ value: c.club_id, label: c.club_name })), required: true, ...(activity ? { disabled: true } : {}) }), field('活动主题', 'theme', { value: a.theme || '', required: true, maxlength: 80, placeholder: '如：艺术、阅读、体育' })),
-      field('活动名称', 'title', { value: a.title || '', required: true, maxlength: 120, placeholder: '为这次相聚起一个名字' }),
+      field('活动名称', 'title', { value: a.title || '', required: true, maxlength: 120, placeholder: '填写活动名称' }),
       field('活动介绍', 'description', { type: 'textarea', value: a.description || '', required: true, maxlength: 2000, placeholder: '说明活动内容、参与方式和需要准备的事项。' }),
       el('div', { class: 'form-grid' }, field('活动地点', 'location', { value: a.location || '', required: true, maxlength: 120 }), field('参与名额', 'capacity', { type: 'number', value: a.capacity || 30, required: true, min: 1, max: 10000, step: 1 })),
       el('div', { class: 'form-grid' }, field('开始时间', 'start_time', { type: 'datetime-local', value: localInput(a.start_time), required: true }), field('结束时间', 'end_time', { type: 'datetime-local', value: localInput(a.end_time), required: true })),
       field('报名截止时间', 'registration_deadline', { type: 'datetime-local', value: localInput(a.registration_deadline), required: true, help: '截止时间应不晚于活动开始时间。时间按你所在的本地时区填写。' }),
-      el('label', { class: 'check-field' }, el('input', { name: 'waitlist_enabled', type: 'checkbox', checked: a.waitlist_enabled ?? true }), '名额已满时允许候补，空位释放后自动转正'));
+      el('label', { class: 'check-field' }, el('input', { name: 'waitlist_enabled', type: 'checkbox', checked: a.waitlist_enabled ?? true }), '名额已满时允许候补；报名开放且未截止时按顺序转正'));
     modal.content.append(formSubmit(form, modal, '保存草稿', data => {
       const body = { club_id: Number(a.club_id || data.get('club_id')), title: data.get('title'), theme: data.get('theme'), description: data.get('description'), location: data.get('location'), capacity: Number(data.get('capacity')), start_time: iso(data.get('start_time')), end_time: iso(data.get('end_time')), registration_deadline: iso(data.get('registration_deadline')), waitlist_enabled: data.has('waitlist_enabled') };
       return api(activity ? `/api/activities/${activity.id}` : '/api/activities', activity ? 'PATCH' : 'POST', body);
@@ -499,9 +499,9 @@
   }
   function feedbackDialog(activity) {
     const modal = dialog('评价本次活动', activity.title);
-    const form = el('form', {}, el('div', { class: 'info-box' }, '每位已签到参与者可在活动结束后提交一次评价。分享真实的参与体验，帮助社团把下一场活动办得更好。'),
+    const form = el('form', {}, el('div', { class: 'info-box' }, '活动结束后，已签到学生可提交一次评价。'),
       field('总体评分', 'rating', { value: '5', required: true, choices: [{ value: '5', label: '5 分 · 非常满意' }, { value: '4', label: '4 分 · 满意' }, { value: '3', label: '3 分 · 一般' }, { value: '2', label: '2 分 · 不太满意' }, { value: '1', label: '1 分 · 不满意' }] }), field('评价与建议', 'comment', { type: 'textarea', maxlength: 2000, placeholder: '你喜欢哪些环节？还有哪些地方可以改进？' }));
-    modal.content.append(formSubmit(form, modal, '提交活动评价', data => api(`/api/activities/${activity.id}/feedback`, 'POST', { rating: Number(data.get('rating')), comment: data.get('comment') }), '感谢你的评价，让下一次相聚更好'));
+    modal.content.append(formSubmit(form, modal, '提交活动评价', data => api(`/api/activities/${activity.id}/feedback`, 'POST', { rating: Number(data.get('rating')), comment: data.get('comment') }), '评价已提交，感谢反馈。'));
   }
   function reportDialog(activity) {
     const modal = dialog('举报活动', activity.title);
@@ -532,8 +532,8 @@
     ]);
     const pendingActivities = activities.filter(a => a.status === 'Submitted');
     const pendingFilings = filings.filter(f => f.status === 'pending');
-    const result = el('div', {}, heading(staff ? '社团管理中心' : '我的工作台', staff ? '看见校园协作全貌，处理审核与社团治理。' : '把社团里的每一件小事，安排得井井有条。', !staff && leaderClubs().length ? button('＋ 创建活动', () => activityForm()) : null),
-      el('div', { class: 'welcome-strip' }, el('div', {}, el('h2', {}, `${user.display_name}，你好。`), el('p', {}, staff ? '审核、治理与资源协同，从这里开始。' : leaderClubs().length ? '活动的每一次顺利发生，都从认真筹备开始。' : '今天也来发现一点新鲜事，参与一点喜欢的事。')), button('浏览校园活动 ↗', () => { location.hash = 'activities'; }, 'ghost')));
+    const result = el('div', {}, heading(staff ? '社团管理中心' : '我的工作台', staff ? '处理活动审核、社团备案、场地申请和举报。' : '查看所属社团、活动报名和待办任务。', !staff && leaderClubs().length ? button('＋ 创建活动', () => activityForm()) : null),
+      el('div', { class: 'welcome-strip' }, el('div', {}, el('h2', {}, `${user.display_name}，你好。`), el('p', {}, staff ? '待审核和待处理的事项见下方列表。' : leaderClubs().length ? '管理社团成员、活动与筹备任务。' : '查看近期报名、社团和筹备任务。')), button('浏览校园活动 ↗', () => { location.hash = 'activities'; }, 'ghost')));
     if (staff) {
       result.append(el('div', { class: 'action-row dashboard-shortcuts' }, button('查看待办事项', () => { location.hash = 'todos'; }, 'secondary small'), button('场地审批', () => { location.hash = 'resources'; }, 'secondary small'), button('活动举报处理', () => { location.hash = 'reports'; }, 'secondary small'), button('查看社团统计', () => { location.hash = 'statistics'; }, 'secondary small')));
       result.append(el('div', { class: 'stats-grid' }, stat('待审核活动', pendingActivities.length, '社团提交的活动申请'), stat('待审核备案', pendingFilings.length, '新社团成立申请'), stat('校园社团', clubs.length, '查看状态与负责人'), stat('未读通知', state.unread, '管理动态及时掌握')),
@@ -541,16 +541,16 @@
         section('社团备案审核', pendingFilings.length), el('div', { class: 'panel' }, pendingFilings.length ? el('div', { class: 'list' }, pendingFilings.map(f => row(f.name, `${f.applicant_name || '社团申请人'} · 申请成立社团`, [
           button('审核通过', event => perform(event.currentTarget, () => api(`/api/club-registrations/${f.id}/review`, 'POST', { decision: 'approve', reason: '' }), '备案审核通过，已建立正式社团'), 'small'),
           button('驳回', () => reviewDialog('社团备案', `/api/club-registrations/${f.id}/review`, 'reject'), 'danger small')], f.description))) : empty('暂无待审核备案', '社团申请人提交的备案资料将显示在这里。')),
-        section('社团治理', clubs.length), el('div', { class: 'panel' }, clubs.length ? el('div', { class: 'list' }, clubs.map(c => row(c.name, `负责人：${c.leader_name || '尚未指定'}`, [badge(c.status), button('业务状态与负责人', () => governanceDialog(c), 'secondary small')]))) : empty('暂无社团记录')));
+        section('社团管理', clubs.length), el('div', { class: 'panel' }, clubs.length ? el('div', { class: 'list' }, clubs.map(c => row(c.name, `负责人：${c.leader_name || '尚未指定'}`, [badge(c.status), button('社团状态与负责人', () => governanceDialog(c), 'secondary small')]))) : empty('暂无社团记录')));
     } else {
       const [registrations, applications] = await Promise.all([api('/api/my/registrations'), api('/api/my/applications')]);
-      result.append(el('div', { class: 'stats-grid' }, stat('我的社团', memberships().length, '一起热爱，共同成长'), stat('有效报名', registrations.filter(r => ['confirmed', 'waitlisted'].includes(r.status)).length, '记得留意活动时间'), stat('待办任务', tasks.filter(t => t.status !== 'done').length, '每一份协作都很重要'), stat('未读通知', state.unread, '及时掌握最新进展')));
+      result.append(el('div', { class: 'stats-grid' }, stat('我的社团', memberships().length, '当前加入的社团'), stat('有效报名', registrations.filter(r => ['confirmed', 'waitlisted'].includes(r.status)).length, '记得留意活动时间'), stat('待办任务', tasks.filter(t => t.status !== 'done').length, '尚未完成的筹备任务'), stat('未读通知', state.unread, '及时掌握最新进展')));
       if (leaderClubs().length) {
         result.append(section('我负责的社团'), el('div', { class: 'panel' }, el('div', { class: 'list' }, leaderClubs().map(c => row(c.club_name, '管理权限限于你负责的社团', [button('成员与申请', () => membershipDialog({ id: c.club_id, name: c.club_name }), 'secondary small'), button('创建活动', () => activityForm(null, c.club_id), 'small')])))),
-          section('社团活动', activities.length), el('div', { class: 'panel' }, activities.length ? el('div', { class: 'list' }, activities.map(activityRow)) : empty('第一场活动，从这里开始', '创建草稿，完善活动安排，然后提交审核。', button('创建活动', () => activityForm(), 'small'))));
+          section('社团活动', activities.length), el('div', { class: 'panel' }, activities.length ? el('div', { class: 'list' }, activities.map(activityRow)) : empty('暂无社团活动', '创建草稿，完善活动安排，然后提交审核。', button('创建活动', () => activityForm(), 'small'))));
       } else {
-        result.append(section('近期参与'), el('div', { class: 'panel' }, registrations.filter(r => r.status === 'confirmed').length ? el('div', { class: 'list' }, registrations.filter(r => r.status === 'confirmed').slice(0, 5).map(r => row(r.title, `${date(r.start_time)} · ${r.location}`, [badge(r.checked_in ? 'done' : r.status), button('活动详情', () => activityDetail(r.activity_id), 'ghost small')]))) : empty('留一点时间给喜欢的事', '从活动广场发现感兴趣的活动，开始你的校园参与。', button('去活动广场', () => { location.hash = 'activities'; }, 'small'))),
-          section('我的社团'), el('div', { class: 'panel' }, memberships().length ? el('div', { class: 'list' }, memberships().map(c => row(c.club_name, c.role === 'leader' ? '社团负责人' : '社团成员', [button('社团详情', () => clubDetail(c.club_id), 'ghost small')]))) : empty('发现一个让你心动的社团', applications.some(a => a.status === 'pending') ? '你有待审核的入社申请，可在“我的参与”跟进进度。' : '和同频的伙伴一起，把兴趣变成日常。', button('发现社团', () => { location.hash = 'clubs'; }, 'small'))));
+        result.append(section('近期参与'), el('div', { class: 'panel' }, registrations.filter(r => r.status === 'confirmed').length ? el('div', { class: 'list' }, registrations.filter(r => r.status === 'confirmed').slice(0, 5).map(r => row(r.title, `${date(r.start_time)} · ${r.location}`, [badge(r.checked_in ? 'done' : r.status), button('活动详情', () => activityDetail(r.activity_id), 'ghost small')]))) : empty('暂无有效报名', '可前往活动广场查看并报名活动。', button('去活动广场', () => { location.hash = 'activities'; }, 'small'))),
+          section('我的社团'), el('div', { class: 'panel' }, memberships().length ? el('div', { class: 'list' }, memberships().map(c => row(c.club_name, c.role === 'leader' ? '社团负责人' : '社团成员', [button('社团详情', () => clubDetail(c.club_id), 'ghost small')]))) : empty('尚未加入社团', applications.some(a => a.status === 'pending') ? '你有待审核的入社申请，可在“我的参与”跟进进度。' : '可查看社团介绍并提交入社申请。', button('发现社团', () => { location.hash = 'clubs'; }, 'small'))));
       }
       if (tasks.some(t => t.status !== 'done')) result.append(section('筹备协作'), el('div', { class: 'panel' }, el('div', { class: 'list' }, tasks.filter(t => t.status !== 'done').slice(0, 4).map(t => row(t.title, `${t.activity_title} · ${t.assignee_name} · ${date(t.due_time)}`, [badge(t.status), button('管理任务', () => { location.hash = 'tasks'; }, 'ghost small')])))));
     }
@@ -587,14 +587,14 @@
 
   async function recordsView() {
     const [registrations, applications, filings, reports] = await Promise.all([api('/api/my/registrations'), api('/api/my/applications'), api('/api/club-registrations'), isStudent() ? api('/api/reports') : Promise.resolve([])]);
-    const result = el('div', {}, heading('我的参与', '每一次申请、报名和相聚，都在这里留下记录。', isStudent() ? button('＋ 申请成立社团', () => filingDialog(), 'secondary small') : null));
+    const result = el('div', {}, heading('我的参与', '查看活动报名、入社申请、备案及举报记录。', isStudent() ? button('＋ 申请成立社团', () => filingDialog(), 'secondary small') : null));
     const tabs = [['registrations', '活动报名', registrations.length], ['applications', '入社申请', applications.length], ['filings', isStaff() ? '社团备案记录' : '社团备案申请', filings.length]];
     if (isStudent()) tabs.push(['reports', '举报记录', reports.length]);
     if (!tabs.some(t => t[0] === state.recordTab)) state.recordTab = 'registrations';
     result.append(el('div', { class: 'tabs', role: 'tablist', 'aria-label': '参与记录类型' }, tabs.map(([name, text, count]) => el('button', { class: `tab ${state.recordTab === name ? 'active' : ''}`, role: 'tab', type: 'button', 'aria-selected': state.recordTab === name ? 'true' : 'false', onclick: () => { state.recordTab = name; renderView(); } }, `${text} · ${count}`))));
     let content;
     if (state.recordTab === 'registrations') {
-      content = registrations.length ? el('div', { class: 'list' }, registrations.map(r => row(r.title, `${date(r.start_time)} · ${r.location}`, [badge(r.status), r.checked_in ? badge('done') : null, button('活动详情', () => activityDetail(r.activity_id), 'ghost small')].filter(Boolean), r.status === 'waitlisted' ? '已加入候补，名额释放后将自动转为正式报名。' : null))) : empty('还没有参加过活动', '报名一场感兴趣的活动，开启新的校园体验。');
+      content = registrations.length ? el('div', { class: 'list' }, registrations.map(r => row(r.title, `${date(r.start_time)} · ${r.location}`, [badge(r.status), r.checked_in ? badge('done') : null, button('活动详情', () => activityDetail(r.activity_id), 'ghost small')].filter(Boolean), r.status === 'waitlisted' ? '已加入候补。报名开放且未截止时，如有名额将按顺序转为正式报名。' : null))) : empty('暂无报名记录', '报名后可在这里查看状态和活动详情。');
     } else if (state.recordTab === 'applications') {
       content = applications.length ? el('div', { class: 'list' }, applications.map(a => row(a.club_name, `申请说明：${a.message || '无'}`, [badge(a.status), button('社团详情', () => clubDetail(a.club_id), 'ghost small'), a.status === 'pending' ? button('撤回申请', event => perform(event.currentTarget, () => api(`/api/applications/${a.id}/cancel`, 'POST', {}), '入社申请已撤回'), 'danger small') : null].filter(Boolean), a.reason ? `审核反馈：${a.reason}` : null))) : empty('还没有入社申请', '先了解喜欢的社团，再提交一份简单的自我介绍。');
     } else if (state.recordTab === 'reports') {
@@ -616,14 +616,14 @@
       else if (todo.kind === 'report') location.hash = 'reports';
       else location.hash = 'dashboard';
     };
-    return el('div', {}, heading('把下一件事，安排清楚', '汇总你能处理的任务、申请与审核，只保留尚未完成的事项。'),
+    return el('div', {}, heading('待办事项', '汇总你能处理的任务、申请与审核，只保留尚未完成的事项。'),
       todos.length ? el('div', { class: 'panel' }, el('div', { class: 'list' }, todos.map(t => row(t.title, `${names[t.kind] || '业务事项'} · ${t.deadline ? `截止：${date(t.deadline)}` : '暂无固定期限'}`, [button('前往处理', () => open(t), 'small')])))) : empty('待办已清空', '当前没有待处理的任务、申请或审核。'));
   }
   async function resourcesView() {
     const [applications, venues] = await Promise.all([api('/api/venue-applications'), api('/api/venues')]);
     const staff = isStaff();
     return el('div', {}, heading(staff ? '场地资源与审批' : '社团活动资源', staff ? '核对活动使用时间，协调校园场地，避免资源冲突。' : '为活动申请合适的场地，跟进审批与物资筹备。', !staff ? button('＋ 申请活动场地', () => venueForm()) : null),
-      el('div', { class: 'panel' }, el('h2', {}, '校园可用场地'), venues.length ? el('div', { class: 'venue-grid' }, venues.map(v => el('div', { class: 'venue-card' }, el('span', { class: 'venue-symbol', 'aria-hidden': 'true' }, '⌖'), el('div', {}, el('h3', {}, v.name), el('p', {}, v.description))))) : el('p', {}, '暂无场地记录。')),
+      el('div', { class: 'panel' }, el('h2', {}, '校园场地'), venues.length ? el('div', { class: 'venue-grid' }, venues.map(v => el('div', { class: 'venue-card' }, el('span', { class: 'venue-symbol', 'aria-hidden': 'true' }, '⌖'), el('div', {}, el('h3', {}, v.name), el('p', {}, v.description))))) : el('p', {}, '暂无场地记录。')),
       section(staff ? '场地使用申请' : '我负责社团的场地申请', applications.length), el('div', { class: 'panel' }, applications.length ? el('div', { class: 'list' }, applications.map(a => row(a.activity_title, `${a.venue_name} · ${date(a.start_time)} — ${date(a.end_time)}`, [badge(a.status), button('活动详情', () => activityDetail(a.activity_id), 'ghost small'), ...(staff && a.status === 'pending' ? [
         button('批准场地申请', event => perform(event.currentTarget, () => api(`/api/venue-applications/${a.id}/review`, 'POST', { decision: 'approve', reason: '' }), '场地申请已批准'), 'small'),
         button('驳回', () => reviewDialog('场地申请', `/api/venue-applications/${a.id}/review`, 'reject'), 'danger small')] : [])], a.reason ? `审批说明：${a.reason}` : null))) : empty('暂无场地申请', staff ? '社团提交的场地使用申请将显示在这里。' : '活动提交审核后，可在详情中申请场地。物资筹备也可从活动详情进入。')));
@@ -639,10 +639,10 @@
     const count = key => list.reduce((sum, a) => sum + Number(a[key] || 0), 0);
     const csv = el('a', { class: 'btn secondary small', href: `/api/clubs/${state.statisticsClub}/statistics.csv`, download: `${data.club_name || '社团'}-活动统计.csv` }, '下载统计 CSV');
     const table = el('table', {}, el('thead', {}, el('tr', {}, ['活动', '状态', '正式报名', '现场签到', '活动评价'].map(t => el('th', { scope: 'col' }, t)))), el('tbody', {}, list.map(a => el('tr', {}, el('td', {}, el('button', { type: 'button', class: 'inline-link', onclick: () => activityDetail(a.id) }, a.title)), el('td', {}, badge(a.status)), el('td', {}, a.registration_count), el('td', {}, a.check_in_count), el('td', {}, a.feedback_count)))));
-    return el('div', {}, heading('看见每一次参与', '以汇总数据回顾已结束与归档活动，帮助社团改进下一次组织。', csv), el('div', { class: 'toolbar statistics-toolbar' }, select, el('span', { class: 'count-label' }, '统计仅包含已结束与已归档活动，不包含候补和已取消报名。')),
-      el('div', { class: 'stats-grid' }, stat('已完成活动', list.length, data.club_name), stat('正式报名', count('registration_count'), '参加名额的有效报名'), stat('现场签到', count('check_in_count'), '已登记到场参与'), stat('活动评价', count('feedback_count'), '来自已签到参与者')),
+    return el('div', {}, heading('社团参与统计', '查看已结束和已归档活动的报名、签到与评价数量。', csv), el('div', { class: 'toolbar statistics-toolbar' }, select, el('span', { class: 'count-label' }, '统计仅包含已结束与已归档活动，不包含候补和已取消报名。')),
+      el('div', { class: 'stats-grid' }, stat('已完成活动', list.length, data.club_name), stat('正式报名', count('registration_count'), '已占用正式名额的报名'), stat('现场签到', count('check_in_count'), '已登记到场参与'), stat('活动评价', count('feedback_count'), '来自已签到参与者')),
       statisticsChart(list),
-      el('div', { class: 'panel' }, list.length ? el('div', { class: 'table-wrap' }, table) : empty('活动结束后，统计在这里汇聚', '目前这个社团还没有已结束或归档的活动。')));
+      el('div', { class: 'panel' }, list.length ? el('div', { class: 'table-wrap' }, table) : empty('暂无活动统计', '目前这个社团还没有已结束或归档的活动。')));
   }
   async function reportsView() {
     const reports = await api('/api/reports');
@@ -653,7 +653,7 @@
   }
   async function tasksView() {
     const tasks = await api('/api/tasks');
-    const result = el('div', {}, heading('一起筹备，让活动更好', '任务分配、进度更新和完成记录，让协作更清楚。'));
+    const result = el('div', {}, heading('筹备任务', '查看任务负责人、截止时间和当前进度。'));
     if (!tasks.length) { result.append(empty('暂时没有筹备任务', leaderClubs().length ? '在工作台打开活动详情，为本社团成员安排任务。' : '被分配的社团筹备任务会显示在这里。')); return result; }
     result.append(el('div', { class: 'task-board' }, ['todo', 'in_progress', 'done'].map(status => {
       const items = tasks.filter(t => t.status === status);
@@ -672,19 +672,19 @@
   }
   async function notificationsView() {
     const notices = await api('/api/notifications');
-    return el('div', {}, heading('校园里的消息，及时收到', '活动审核、报名变化和社团协作，都在这里通知你。'),
-      notices.length ? el('div', { class: 'panel' }, notices.map(n => el('article', { class: 'notice-item' }, el('span', { class: `notice-dot ${n.read ? 'read' : ''}`, 'aria-label': n.read ? '已读' : '未读' }), el('div', { class: 'notice-body' }, el('h3', {}, n.title), el('p', {}, n.message), el('time', { datetime: n.created_at }, date(n.created_at))), n.read ? null : button('标为已读', event => perform(event.currentTarget, () => api(`/api/notifications/${n.id}/read`, 'POST', {}), ''), 'ghost small')))) : empty('暂时没有新消息', '当申请进度或活动安排变化时，我们会在这里通知你。'));
+    return el('div', {}, heading('站内通知', '查看审核结果、报名变化及任务通知。'),
+      notices.length ? el('div', { class: 'panel' }, notices.map(n => el('article', { class: 'notice-item' }, el('span', { class: `notice-dot ${n.read ? 'read' : ''}`, 'aria-label': n.read ? '已读' : '未读' }), el('div', { class: 'notice-body' }, el('h3', {}, n.title), el('p', {}, n.message), el('time', { datetime: n.created_at }, date(n.created_at))), n.read ? null : button('标为已读', event => perform(event.currentTarget, () => api(`/api/notifications/${n.id}/read`, 'POST', {}), ''), 'ghost small')))) : empty('暂时没有新消息', '有新的申请结果或活动、任务通知时，将显示在这里。'));
   }
   async function auditView() {
     const [audit, logs] = await Promise.all([api('/api/audit'), api('/api/logs')]);
     const actionNames = {
-      demo_initialized: '初始化课程演示资料', lifecycle_advance: '推进活动生命周期',
-      club_profile_imported: '录入社团预览资料', account_password_set: '设置账号密码',
+      demo_initialized: '初始化课程演示资料', lifecycle_advance: '更新活动状态',
+      club_profile_imported: '录入社团资料', account_password_set: '设置账号密码',
       application_created: '提交入社申请', application_approved: '通过入社申请',
       application_rejected: '驳回入社申请', application_cancelled: '撤回入社申请',
       membership_changed: '调整社团成员状态', club_registration_created: '提交社团备案',
       club_registration_approved: '通过社团备案', club_registration_rejected: '驳回社团备案',
-      club_status_changed: '调整社团业务状态', club_leader_changed: '确认负责人变更',
+      club_status_changed: '调整社团状态', club_leader_changed: '确认负责人变更',
       activity_created: '创建活动草稿', activity_edited: '修改活动草稿',
       activity_submit: '提交活动审核', activity_approve: '审核通过活动',
       activity_reject: '驳回活动', activity_publish: '发布活动',
@@ -700,7 +700,7 @@
     };
     const entityNames = { activity: '活动', club: '社团', club_registration: '社团备案', registration: '活动报名', application: '入社申请', task: '筹备任务', membership: '成员关系', user: '用户', system: '系统', venue_application: '场地申请', material: '活动物资', feedback: '活动评价', report: '活动举报' };
     const table = el('table', {}, el('thead', {}, el('tr', {}, ['时间', '操作人', '业务操作', '业务对象'].map(t => el('th', { scope: 'col' }, t)))), el('tbody', {}, audit.map(a => el('tr', {}, el('td', {}, date(a.created_at)), el('td', {}, a.actor_name || '系统'), el('td', {}, actionNames[a.action] || '业务操作'), el('td', {}, `${entityNames[a.entity_type] || '业务记录'} ${a.entity_id || ''}`)))));
-    return el('div', {}, heading('管理记录', '回顾跨社团业务操作，保留审核与治理的过程。'), section('业务审计', audit.length), el('div', { class: 'panel' }, audit.length ? el('div', { class: 'table-wrap' }, table) : empty('暂无业务审计记录')),
+    return el('div', {}, heading('管理记录', '查看社团审核、活动状态和成员身份的变更记录。'), section('操作记录', audit.length), el('div', { class: 'panel' }, audit.length ? el('div', { class: 'table-wrap' }, table) : empty('暂无操作记录')),
       section('运行情况', logs.length), el('div', { class: 'panel' }, logs.length ? el('div', { class: 'list' }, logs.map(l => row(l.message || l.action || '运行记录', `${date(l.created_at)}${l.level ? ` · ${l.level}` : ''}`))) : empty('暂无运行日志', '系统运行记录将在这里显示。')));
   }
 
@@ -714,19 +714,19 @@
     if (state.view === 'recommendations' && !isStudent()) state.view = 'activities';
     renderNavigation(); document.getElementById('page-label').textContent = labels[state.view];
     document.title = `${labels[state.view]} · 青禾校园社团`;
-    main.setAttribute('aria-busy', 'true'); main.replaceChildren(el('div', { class: 'loading-state', role: 'status' }, '正在准备校园空间…'));
+    main.setAttribute('aria-busy', 'true'); main.replaceChildren(el('div', { class: 'loading-state', role: 'status' }, '正在加载页面…'));
     const renderers = { activities: activitiesView, clubs: clubsView, calendar: calendarView, recommendations: recommendationsView, dashboard: dashboardView, todos: todosView, records: recordsView, tasks: tasksView, resources: resourcesView, statistics: statisticsView, reports: reportsView, notifications: notificationsView, audit: auditView };
     try {
       const content = await renderers[state.view]();
       if (generation === state.generation) main.replaceChildren(content);
     } catch (error) {
-      if (generation === state.generation) main.replaceChildren(heading('暂时无法打开这个空间', '请稍后再试。'), el('div', { class: 'error-box' }, error.message), el('div', { class: 'action-row action-gap' }, button('重新加载', () => renderView(), 'secondary')));
+      if (generation === state.generation) main.replaceChildren(heading('暂时无法加载页面', '请稍后再试。'), el('div', { class: 'error-box' }, error.message), el('div', { class: 'action-row action-gap' }, button('重新加载', () => renderView(), 'secondary')));
     } finally { if (generation === state.generation) main.removeAttribute('aria-busy'); }
   }
   window.addEventListener('hashchange', () => { renderView(); });
   async function start() {
     try { await session(); await renderView(); }
-    catch (error) { main.replaceChildren(heading('校园空间连接中断', '请检查本地服务是否已经启动。'), el('div', { class: 'error-box' }, error.message), el('div', { class: 'action-row action-gap' }, button('重新连接', () => start(), 'secondary'))); }
+    catch (error) { main.replaceChildren(heading('暂时无法连接服务', '请检查网络连接，稍后重试。'), el('div', { class: 'error-box' }, error.message), el('div', { class: 'action-row action-gap' }, button('重新连接', () => start(), 'secondary'))); }
   }
   function syncStatusAccent() {
     // Keep yellow and blue as the two structural colors; use one semantic color at a time.

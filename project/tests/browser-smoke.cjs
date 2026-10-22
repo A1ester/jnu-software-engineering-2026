@@ -61,7 +61,7 @@ async function main() {
     checks.push('UI login and session');
     await student.screenshot({ path: `${artifactDir}/desktop.png`, fullPage: true });
 
-    await navigate(student, 'clubs', '从兴趣开始，找到归属');
+    await navigate(student, 'clubs', '校园社团');
     await student.locator('.club-card').filter({ hasText: '校园摄影社' }).getByRole('button').click();
     await student.getByRole('button', { name: '申请加入社团', exact: true }).click();
     await student.locator('textarea[name="message"]').fill('喜欢校园摄影，希望参与社团实践。');
@@ -79,7 +79,7 @@ async function main() {
     await leader.locator('dialog').getByText('有效成员', { exact: false }).first().waitFor();
     checks.push('UI leader membership approval');
 
-    await navigate(student, 'activities', '值得参与的校园活动');
+    await navigate(student, 'activities', '公开活动');
     await student.locator('.activity-card').filter({ hasText: '校园摄影漫步' }).getByRole('button').click();
     await submit(student, '/activities/1/registrations', '报名参加', 201);
     await student.locator('dialog').getByRole('button', { name: '取消报名', exact: true }).waitFor();
@@ -138,7 +138,7 @@ async function main() {
     assert.equal((await opened).status(), 200);
     checks.push('UI publish and separately open registration');
 
-    await navigate(leader, 'activities', '值得参与的校园活动');
+    await navigate(leader, 'activities', '公开活动');
     const searchResponse = leader.waitForResponse(r => r.url().includes('/api/activities?') && r.request().method() === 'GET');
     await leader.getByRole('searchbox', { name: '搜索活动' }).fill(activityTitle);
     await leader.getByRole('button', { name: '筛选', exact: true }).click();
@@ -148,21 +148,21 @@ async function main() {
     checks.push('UI activity filtering');
 
     const member = await login(browser, 'member');
-    await navigate(member, 'tasks', '一起筹备，让活动更好');
+    await navigate(member, 'tasks', '筹备任务');
     const taskSelect = member.getByRole('combobox', { name: '准备摄影路线的任务状态', exact: true });
     const taskUpdated = response(member, '/tasks/1', 'PATCH');
     await taskSelect.selectOption('in_progress');
     assert.equal((await taskUpdated).status(), 200);
     await member.locator('.task-column[aria-label="进行中"]').getByText('准备摄影路线', { exact: true }).waitFor();
     checks.push('UI task progress');
-    await navigate(member, 'activities', '值得参与的校园活动');
+    await navigate(member, 'activities', '公开活动');
     await member.locator('.activity-card').filter({ hasText: '摄影交流实践' }).getByRole('button').click();
     await member.getByRole('button', { name: '现场签到登记', exact: true }).click();
     await submit(member, '/activities/2/check-ins', '确认到场');
     await member.locator('dialog').getByText('已签到', { exact: true }).waitFor();
     checks.push('UI authorized check-in');
 
-    await navigate(student, 'clubs', '从兴趣开始，找到归属');
+    await navigate(student, 'clubs', '校园社团');
     await student.getByRole('button', { name: '＋ 申请成立社团', exact: true }).click();
     await student.locator('[name="name"]').fill(clubName);
     await student.locator('dialog [name="description"]').fill('校园天文观测与知识交流。');
@@ -176,7 +176,7 @@ async function main() {
     await student.locator('main .list-row').filter({ hasText: clubName }).getByRole('button', { name: '成员与申请', exact: true }).waitFor();
     checks.push('UI applicant becomes leader only after approval');
 
-    await navigate(student, 'notifications', '校园里的消息，及时收到');
+    await navigate(student, 'notifications', '站内通知');
     const noticeRead = response(student, '/read', 'POST');
     await student.getByRole('button', { name: '标为已读', exact: true }).first().click();
     assert.equal((await noticeRead).status(), 200);
@@ -188,13 +188,13 @@ async function main() {
     await staff.screenshot({ path: `${artifactDir}/staff.png`, fullPage: true });
     checks.push('UI translated audit');
 
-    await navigate(student, 'calendar', '把期待，写进日历');
+    await navigate(student, 'calendar', '活动日历');
     assert.ok(await student.locator('.calendar-day').count() >= 28);
     await student.locator('.calendar-day').filter({ has: student.locator('.calendar-event-count') }).first().click();
     await student.locator('.activity-card').first().waitFor();
     checks.push('UI local-day activity calendar');
 
-    await navigate(student, 'recommendations', '从兴趣出发，遇见新活动');
+    await navigate(student, 'recommendations', '兴趣推荐');
     await student.locator('input[name="themes"][value="摄影"]').check();
     const recommended = student.waitForResponse(r => r.url().includes('/api/recommendations?'));
     await student.getByRole('button', { name: '更新兴趣推荐', exact: true }).click();
@@ -202,7 +202,7 @@ async function main() {
     await student.locator('main').getByText(/匹配偏好主题/).first().waitFor();
     checks.push('UI explainable interest recommendation');
 
-    await navigate(member, 'todos', '把下一件事，安排清楚');
+    await navigate(member, 'todos', '待办事项');
     await member.locator('main .list-row').filter({ hasText: '准备摄影路线' }).getByRole('button', { name: '前往处理' }).waitFor();
     assert.ok((await member.locator('main').innerText()).includes('截止：'));
     checks.push('UI actionable personal todos');
@@ -219,7 +219,7 @@ async function main() {
     assert.equal((await reserved).status(), 200);
     checks.push('UI venue application and staff approval');
 
-    await navigate(leader, 'activities', '值得参与的校园活动');
+    await navigate(leader, 'activities', '公开活动');
     await leader.locator('.activity-card').filter({ hasText: activityTitle }).getByRole('button').click();
     await leader.getByRole('button', { name: '活动物资', exact: true }).click();
     await leader.locator('dialog [name="name"]').fill('签到笔');
@@ -233,21 +233,21 @@ async function main() {
     assert.equal((await prepared).status(), 200);
     checks.push('UI material request and preparation');
 
-    await navigate(member, 'activities', '值得参与的校园活动');
+    await navigate(member, 'activities', '公开活动');
     await member.locator('.activity-card').filter({ hasText: '摄影复盘分享' }).getByRole('button').click();
     await member.getByRole('button', { name: '评价本次活动', exact: true }).click();
     await member.locator('dialog [name="rating"]').selectOption('5');
     await member.locator('dialog [name="comment"]').fill('活动安排清楚，摄影交流很有帮助。');
     await submit(member, '/activities/4/feedback', '提交活动评价', 201);
     await member.locator('dialog').waitFor({ state: 'hidden' });
-    await navigate(leader, 'statistics', '看见每一次参与');
+    await navigate(leader, 'statistics', '社团参与统计');
     await leader.locator('table tbody tr').filter({ hasText: '摄影复盘分享' }).waitFor();
     const csvDownload = leader.waitForEvent('download');
     await leader.getByRole('link', { name: '下载统计 CSV', exact: true }).click();
     assert.ok((await csvDownload).suggestedFilename().endsWith('.csv'));
     checks.push('UI finished-activity feedback and statistics export');
 
-    await navigate(student, 'activities', '值得参与的校园活动');
+    await navigate(student, 'activities', '公开活动');
     await student.locator('.activity-card').filter({ hasText: '校园摄影漫步' }).getByRole('button').click();
     await student.getByRole('button', { name: '举报活动', exact: true }).click();
     await student.locator('dialog [name="reason"]').fill('请核对现场组织说明。');
@@ -266,7 +266,7 @@ async function main() {
     assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Mobile horizontal overflow');
     await mobile.locator('.activity-card').first().getByRole('button').click();
     assert.ok(await mobile.locator('dialog').evaluate(node => node.getBoundingClientRect().width <= innerWidth), 'Mobile dialog exceeds viewport');
-    await navigate(mobile, 'calendar', '把期待，写进日历');
+    await navigate(mobile, 'calendar', '活动日历');
     assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Mobile calendar horizontal overflow');
     checks.push('UI mobile layout and dialog');
     assert.deepEqual(errors, [], 'Uncaught browser errors');
